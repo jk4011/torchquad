@@ -130,3 +130,7 @@ dmypy.json
 
 my_notebooks
 .vscode
+
+.idea
+tmp*.py
+tutorial*.py

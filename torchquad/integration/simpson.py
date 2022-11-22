@@ -33,17 +33,34 @@ class Simpson(NewtonCotes):
         cur_dim_areas will contain the areas per dimension
         """
         # We collapse dimension by dimension
-        for cur_dim in range(dim):
-            cur_dim_areas = (
-                hs[cur_dim]
-                / 3.0
-                * (
-                    cur_dim_areas[..., 0:-2][..., ::2]
-                    + 4 * cur_dim_areas[..., 1:-1][..., ::2]
-                    + cur_dim_areas[..., 2:][..., ::2]
+        if cur_dim_areas.ndim == dim:
+            for cur_dim in range(dim):
+                cur_dim_areas = (
+                    hs[cur_dim]
+                    / 3.0
+                    * (
+                        cur_dim_areas[..., 0:-2][..., ::2]
+                        + 4 * cur_dim_areas[..., 1:-1][..., ::2]
+                        + cur_dim_areas[..., 2:][..., ::2]
+                    )
                 )
-            )
-            cur_dim_areas = anp.sum(cur_dim_areas, axis=dim - cur_dim - 1)
+                cur_dim_areas = anp.sum(cur_dim_areas, axis=dim - cur_dim - 1)
+
+        elif cur_dim_areas.ndim == dim + 1:
+            for cur_dim in range(dim):
+                cur_dim_areas = (
+                    hs[cur_dim]
+                    / 3.0
+                    * (
+                        cur_dim_areas[..., 0:-2, :][..., ::2, :]
+                        + 4 * cur_dim_areas[..., 1:-1, :][..., ::2, :]
+                        + cur_dim_areas[..., 2:, :][..., ::2, :]
+                    )
+                )
+                cur_dim_areas = anp.sum(cur_dim_areas, axis=dim - cur_dim - 1)
+        else:
+            raise ValueError("dimension of cur_dim_areas is inaccurate")
+
         return cur_dim_areas
 
     @staticmethod

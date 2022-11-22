@@ -47,7 +47,11 @@ class NewtonCotes(BaseIntegrator):
             backend tensor: Quadrature result
         """
         # Reshape the output to be [N,N,...] points instead of [dim*N] points
-        function_values = function_values.reshape([n_per_dim] * dim)
+        # todo : `numel()` is only for torch. elemplement for tensorflow and jax
+        if function_values.numel() == n_per_dim ** dim:
+            function_values = function_values.reshape([n_per_dim] * dim)
+        else:
+            function_values = function_values.reshape([n_per_dim] * dim + [function_values.shape[-1]])
 
         logger.debug("Computing areas.")
 
